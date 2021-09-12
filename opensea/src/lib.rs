@@ -18,6 +18,7 @@ mod contracts;
 pub use contracts::OpenSea;
 
 use std::sync::Arc;
+use std::env;
 use thiserror::Error;
 use types::MinimalOrder;
 
@@ -197,7 +198,10 @@ impl<M: Middleware> Client<M> {
         // set the gas
         // let gas = call.estimate_gas().await.expect("could not estimate gas");
         // TODO: Why does gas estimation not work?
-        let call = call.gas(300_000);
+        let gas_limit = env::var("GAS_LIMIT").unwrap_or("none".to_string());
+        let gas_limit_int = gas_limit.parse::<i32>().unwrap();
+        println!("GAS_LIMIT: {}", gas_limit_int);
+        let call = call.gas(gas_limit_int);
 
         Ok(call)
     }
